@@ -80,4 +80,42 @@ end
 % MaxKoord = [MaxX MaxY]
 MaxKoord = [xc(mod(MaxIndex-1,length(yc))+1) yc(floor((MaxIndex-1)/length(xc))+1)]
 
-%% Neurális háló
+%% MDP
+P_ssp_a(:,:,1) = [.2 .4 .4; .3 .2 .5; .5 .4 .1] ;
+P_ssp_a(:,:,2) = [ .3 .3 .4 ; 0 1 0 ; .25 .25 .5];
+R_s_a=[1 3; -2 1;0 1];
+gamma = 0.9;
+Pi=[.3 .2 .5 ; .7 .8 .5];
+R_s_pi =sum((R_s_a.*Pi'),2)
+[ds, da]=size(R_s_a);
+P_pi=zeros(ds);
+for is=1:ds
+for isp=1:ds
+for ia=1:da
+P_pi(is,isp)=P_pi(is,isp)+Pi(ia,is)*P_ssp_a(is,isp,ia);
+end
+end
+end
+P_pi
+MDP.P_ssp_a=P_ssp_a;
+MDP.R_s_a=R_s_a;
+MDP.Pi=Pi;
+MDP.R_s_pi=R_s_pi;
+MDP.P_pi=P_pi;
+%Ha v kell
+v_pi=inv(eye(ds)-gamma*P_pi)*R_s_pi
+q_pi=zeros(ds,da);
+for is = 1:ds
+for ia = 1:da
+q_pi(is,ia) = R_s_a(is,ia); %<- ez a sor még kell a q kiszámításához
+for isp = 1:ds
+q_pi(is,ia) = q_pi(is,ia) + gamma*P_ssp_a(is,isp,ia)*v_pi(isp);
+end
+end
+end
+q_pi
+%Egyszerűsített verzió q_pi-re
+R_s_a(3,1)+ gamma*P_ssp_a(3,:,1) *v_pi
+vpi1 = v_pi(1)
+vPi3 = v_pi(3)
+vPi2 = v_pi(2)
