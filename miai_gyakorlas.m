@@ -80,4 +80,4 @@ end
 % MaxKoord = [MaxX MaxY]
 MaxKoord = [xc(mod(MaxIndex-1,length(yc))+1) yc(floor((MaxIndex-1)/length(xc))+1)]
 
-%% 
+%% Neurális háló
